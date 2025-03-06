@@ -15,8 +15,8 @@ router.delete('/Delete/Emp', api_manage_emp.delete_employee);
 // Supplier Route
 router.get('/All/Supplier', api_supplier.select_all_supplier);
 router.post('/Supplier/With/ID', api_supplier.select_supplier_with_id);
-// router.post('/Insert/Supplier', api_supplier.insert_supplier);
-// router.put('/Update/Supplier', api_supplier.update_supplier);
-// router.delete('/Delete/Supplier', api_supplier.delete_supplier);
+router.post('/Insert/Supplier', api_supplier.insert_supplier);
+router.put('/Update/Supplier', api_supplier.update_supplier);
+router.delete('/Delete/Supplier', api_supplier.delete_supplier);
 
 module.exports = router;
