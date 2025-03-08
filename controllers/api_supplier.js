@@ -1,6 +1,5 @@
 const mysql = require('mysql');
 require("dotenv").config();
-// const bcrypt = require("bcrypt");
 const connection_final= require("../components/connection_final");
 
 exports.select_all_supplier = (req, res, next) => {

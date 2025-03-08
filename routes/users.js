@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const api_manage_emp= require("../controllers/api_manage_emp");
 const api_supplier= require("../controllers/api_supplier");
+const api_customer= require("../controllers/api_customer");
 
 
 
@@ -18,5 +19,12 @@ router.post('/Supplier/With/ID', api_supplier.select_supplier_with_id);
 router.post('/Insert/Supplier', api_supplier.insert_supplier);
 router.put('/Update/Supplier', api_supplier.update_supplier);
 router.delete('/Delete/Supplier', api_supplier.delete_supplier);
+
+// Customer Route
+router.get('/All/Customer', api_customer.select_all_customer);
+router.post('/Customer/With/Tel', api_customer.select_customer_with_tel);
+router.post('/Insert/Customer', api_customer.insert_customer);
+router.put('/Update/Customer', api_customer.update_customer);
+router.delete('/Delete/Customer', api_customer.delete_customer);
 
 module.exports = router;
