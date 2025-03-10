@@ -715,4 +715,246 @@ exports.delete_model = (req, res, next) => {
 };
 
 
+//************************************************** Product ************************************************************
+
+exports.select_all_product = (req, res, next) => {
+    try {
+        let sql = `SELECT p.proid, p.ProductName, b.brand, c.category, m.model, z.zone, p.qty, p.qty_min, p.cost_price, p.retail_price, p.status
+                   FROM products p 
+                   LEFT JOIN brand b ON p.brand_id = b.brand_id 
+                   LEFT JOIN category c ON p.cat_id = c.cat_id 
+                   LEFT JOIN model m ON p.model_id = m.model_id 
+                   LEFT JOIN zone z ON p.zone_id = z.zone_id`;
+
+        connection_final.query(sql, [], (err, results) => {
+            if (err) {
+                console.error("Database Error:", err);
+                return res.status(500).json({ "result": "Database Error" });
+            }
+            res.status(200).json({
+                "result_code": "200",
+                "result": "Success",
+                "products": results
+            });
+        });
+
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ "result": "Internal Server Error" });
+    }
+}
+
+exports.select_product_with_proname = (req, res, next) => {
+    let _data = req.body;
+    let _ProductName = _data.ProductName;
+
+    if (typeof _ProductName != 'undefined') {
+        try {
+            connection_final.query(
+                'SELECT * FROM products where ProductName = ?', [_ProductName],
+                (err, results, fields) => {
+
+                    if (err) {
+                        console.log("Error select data from the database", err);
+                        return res.status(400).send();
+                    } else {
+                        let _userInfo = results
+                        res.status(200).json({
+                            "result_code": "200",
+                            "result": "Success",
+                            "user_info": _userInfo,
+                        });
+                    }
+                }
+            )
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send();
+        }
+    } else {
+        res.status(404).json({ "result": "Incorrect Parameter" });
+    }
+}
+
+exports.search_products = (req, res, next) => {
+    let { ProductName, brand, category, zone, model, status } = req.body;
+
+    let sql = `SELECT p.*, b.brand, c.category, m.model, z.zone, m.model 
+               FROM products p
+               LEFT JOIN brand b ON p.brand_id = b.brand_id
+               LEFT JOIN category c ON p.cat_id = c.cat_id
+               LEFT JOIN model m ON p.model_id = m.model_id
+               LEFT JOIN zone z ON p.zone_id = z.zone_id
+               WHERE 1 = 1`;
+
+    let values = [];
+
+    if (ProductName) {
+        sql += ` AND p.ProductName LIKE ?`;
+        values.push(`%${ProductName}%`);
+    }
+    if (brand) {
+        sql += ` AND b.brand = ?`;
+        values.push(brand);
+    }
+    if (category) {
+        sql += ` AND c.category = ?`;
+        values.push(cat_id);
+    }
+    if (zone) {
+        sql += ` AND z.zone = ?`;
+        values.push(zone_id);
+    }
+    if (model) {
+        sql += ` AND m.model = ?`;
+        values.push(model_id);
+    }
+    if (status) {
+        sql += ` AND p.status = ?`;
+        values.push(status);
+    }
+
+    connection_final.query(sql, values, (err, results) => {
+        if (err) {
+            console.error("Database Error:", err);
+            return res.status(500).json({ "result": "Database Error" });
+        }
+        res.status(200).json({
+            "result_code": "200",
+            "result": "Success",
+            "products": results
+        });
+    });
+};
+
+exports.insert_product = (req, res, next) => {
+    let { ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status } = req.body;
+
+    if (!ProductName || !brand_id || !cat_id || !model_id || !zone_id || !qty || !qty_min || !cost_price || !retail_price || !status) {
+        return res.status(400).json({ "result": "Missing required parameters" });
+    }
+
+    try {
+        // ตรวจสอบว่า model_id มีอยู่แล้วหรือไม่
+        connection_final.query(
+            'SELECT * FROM products WHERE model_id = ?',
+            [model_id],
+            (err, results) => {
+                if (err) {
+                    console.log("Error checking model", err);
+                    return res.status(500).json({ "result": "Database Error" });
+                }
+
+                if (results.length > 0) {
+                    return res.status(400).json({ "result": "Model ID already exists" });
+                }
+
+                // ถ้า model_id ยังไม่มีอยู่ในระบบ ให้ทำการ INSERT
+                connection_final.query(
+                    'INSERT INTO products (ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status) VALUES (?,?,?,?,?,?,?,?,?,?)',
+                    [ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status],
+                    (err, insertResults) => {
+                        if (err) {
+                            console.log("Error inserting product", err);
+                            return res.status(400).json({ "result": "Database Error" });
+                        }
+
+                        res.status(201).json({
+                            "result_code": "201",
+                            "result": "Insert Success",
+                            "inserted_id": insertResults.insertId,
+                        });
+                    }
+                );
+            }
+        );
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ "result": "Server Error" });
+    }
+};
+
+
+exports.update_product = (req, res, next) => {
+    let { ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status, proid } = req.body;
+
+    if (!ProductName || !brand_id || !cat_id || !model_id || !zone_id || !qty || !qty_min || !cost_price || !retail_price || !status) {
+        return res.status(400).json({ result: "Missing required parameters" });
+    }
+
+    try {
+        // Check if the model_id already exists in the database
+        connection_final.query(
+            'SELECT * FROM products WHERE model_id = ? AND proid != ?',
+            [model_id, proid],
+            (err, results) => {
+                if (err) {
+                    console.log("Error checking for duplicate model_id", err);
+                    return res.status(500).json({ result: "Database Error" });
+                }
+
+                if (results.length > 0) {
+                    return res.status(400).json({ result: "Model ID already exists, please use a unique model ID" });
+                }
+
+                // Proceed with updating the product if no duplicate model_id found
+                connection_final.query(
+                    'UPDATE products SET ProductName = ?, brand_id = ?, cat_id = ?, model_id = ?, zone_id = ?, qty = ?, qty_min = ?, cost_price = ?, retail_price = ?, status = ? WHERE proid = ?',
+                    [ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status, proid],
+                    (err, updateResults) => {
+                        if (err) {
+                            console.log("Error updating product", err);
+                            return res.status(500).json({ result: "Database Error" });
+                        }
+
+                        return res.status(200).json({
+                            result_code: 200,
+                            result: "Update Success",
+                            affected_rows: updateResults.affectedRows,
+                        });
+                    }
+                );
+            }
+        );
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ result: "Server Error" });
+    }
+};
+
+
+exports.delete_product = (req, res, next) => {
+    let { proid } = req.body;
+    if (!proid) {
+        return res.status(400).json({ result: "Missing required parameter" });
+    }
+
+    try {
+        connection_final.query(
+            'DELETE FROM products WHERE proid =?',
+            [proid],
+            (err, deleteResults) => {
+                if (err) {
+                    console.log("Error deleting product", err);
+                    return res.status(500).json({ result: "Database Error" });
+                }
+                return res.status(200).json({
+                    result_code: 200,
+                    result: "Delete Success",
+                    affected_rows: deleteResults.affectedRows,
+                });
+            }
+        );
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ result: "Server Error" });
+    }
+};
+
+//************************************************** End ************************************************************
+
+
+
+
+
 

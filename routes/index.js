@@ -35,4 +35,13 @@ router.post('/Insert/Model', api_products.insert_model);
 router.put('/Update/Model', api_products.update_model);
 router.delete('/Delete/Model', api_products.delete_model);
 
+// Product Route
+router.get('/All/Product', api_products.select_all_product);
+router.post('/Product/With/ID', api_products.select_product_with_proname);
+router.post('/products/search', api_products.search_products);
+router.post('/Insert/Product', api_products.insert_product);
+router.put('/Update/Product', api_products.update_product);
+router.delete('/Delete/Product', api_products.delete_product);
+
+
 module.exports = router;
