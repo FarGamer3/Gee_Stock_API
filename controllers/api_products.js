@@ -509,221 +509,220 @@ exports.delete_zone = (req, res, next) => {
 //************************************************** Model ************************************************************
 
 
-exports.select_all_model = (req, res, next) => {
-    try {
-        connection_final.query(
-            'SELECT * FROM model',
-            [],
-            (err, results, fields) => {
-                if (err) {
-                    console.log("Error select data from the database", err);
-                    return res.status(400).send();
-                } else {
-                    let _allModel = results
-                    res.status(200).json({
-                        "result_code": "200",
-                        "result": "Success",
-                        "user_info": _allModel,
-                    });
-                }
-            }
-        )
-    } catch (err) {
-        console.log(err);
-        return res.status(500).send();
-    }
-}
+// exports.select_all_model = (req, res, next) => {
+//     try {
+//         connection_final.query(
+//             'SELECT * FROM model',
+//             [],
+//             (err, results, fields) => {
+//                 if (err) {
+//                     console.log("Error select data from the database", err);
+//                     return res.status(400).send();
+//                 } else {
+//                     let _allModel = results
+//                     res.status(200).json({
+//                         "result_code": "200",
+//                         "result": "Success",
+//                         "user_info": _allModel,
+//                     });
+//                 }
+//             }
+//         )
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).send();
+//     }
+// }
 
 
-exports.select_model_with_id = (req, res, next) => {
-    let _data = req.body;
-    let _model = _data.model;
+// exports.select_model_with_id = (req, res, next) => {
+//     let _data = req.body;
+//     let _model = _data.model;
 
-if (typeof _model!= 'undefined') {
-    try {
-        connection_final.query(
-            'SELECT * FROM model where model = ?',
-            [_model],
-            (err, results, fields) => {
-                if (err) {
-                    console.log("Error select data from the database", err);
-                    return res.status(400).send();
-                } else {
-                    let _userInfo = results
-                    res.status(200).json({
-                        "result_code": "200",
-                        "result": "Success",
-                        "user_info": _userInfo,
-                    });
-                }
-            }
-        )
-    } catch (err) {
-        console.log(err);
-        return res.status(500).send();
-    }
-} else {
-    res.status(404).json({ "result": "Incorrect Parameter" });
-}}
-
-
-exports.insert_model = (req, res, next) => {
-    let { model, model_detail } = req.body;
-
-    if (!model || !model_detail) {
-        return res.status(400).json({ "result": "Missing required parameters" });
-    }
-
-    try {
-        // Check if the model already exists
-        connection_final.query(
-            'SELECT * FROM model WHERE model = ? AND model_detail = ?',
-            [model, model_detail],
-            (err, results) => {
-                if (err) {
-                    console.log("Error checking model existence", err);
-                    return res.status(500).json({ "result": "Database Error" });
-                }
-
-                if (results.length > 0) {
-                    return res.status(409).json({ "result": "Duplicate Entry", "message": "Model already exists" });
-                }
-
-                // Insert only if no duplicate exists
-                connection_final.query(
-                    'INSERT INTO model (model, model_detail) VALUES (?,?)',
-                    [model, model_detail],
-                    (err, insertResults) => {
-                        if (err) {
-                            console.log("Error inserting model", err);
-                            return res.status(500).json({ "result": "Database Error" });
-                        }
-
-                        res.status(201).json({
-                            "result_code": "201",
-                            "result": "Insert Success",
-                            "inserted_id": insertResults.insertId,
-                        });
-                    }
-                );
-            }
-        );
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ "result": "Server Error" });
-    }
-};
+// if (typeof _model!= 'undefined') {
+//     try {
+//         connection_final.query(
+//             'SELECT * FROM model where model = ?',
+//             [_model],
+//             (err, results, fields) => {
+//                 if (err) {
+//                     console.log("Error select data from the database", err);
+//                     return res.status(400).send();
+//                 } else {
+//                     let _userInfo = results
+//                     res.status(200).json({
+//                         "result_code": "200",
+//                         "result": "Success",
+//                         "user_info": _userInfo,
+//                     });
+//                 }
+//             }
+//         )
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).send();
+//     }
+// } else {
+//     res.status(404).json({ "result": "Incorrect Parameter" });
+// }}
 
 
-exports.update_model = (req, res, next) => {
-    let { model, model_detail, model_id } = req.body;  // Get data from request body
+// exports.insert_model = (req, res, next) => {
+//     let { model, model_detail } = req.body;
+
+//     if (!model || !model_detail) {
+//         return res.status(400).json({ "result": "Missing required parameters" });
+//     }
+
+//     try {
+//         // Check if the model already exists
+//         connection_final.query(
+//             'SELECT * FROM model WHERE model = ? AND model_detail = ?',
+//             [model, model_detail],
+//             (err, results) => {
+//                 if (err) {
+//                     console.log("Error checking model existence", err);
+//                     return res.status(500).json({ "result": "Database Error" });
+//                 }
+
+//                 if (results.length > 0) {
+//                     return res.status(409).json({ "result": "Duplicate Entry", "message": "Model already exists" });
+//                 }
+
+//                 // Insert only if no duplicate exists
+//                 connection_final.query(
+//                     'INSERT INTO model (model, model_detail) VALUES (?,?)',
+//                     [model, model_detail],
+//                     (err, insertResults) => {
+//                         if (err) {
+//                             console.log("Error inserting model", err);
+//                             return res.status(500).json({ "result": "Database Error" });
+//                         }
+
+//                         res.status(201).json({
+//                             "result_code": "201",
+//                             "result": "Insert Success",
+//                             "inserted_id": insertResults.insertId,
+//                         });
+//                     }
+//                 );
+//             }
+//         );
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).json({ "result": "Server Error" });
+//     }
+// };
+
+
+// exports.update_model = (req, res, next) => {
+//     let { model, model_detail, model_id } = req.body;  // Get data from request body
     
-    if (!model || !model_detail || !model_id) {
-        return res.status(400).json({ "result": "Missing required parameters" });
-    }
+//     if (!model || !model_detail || !model_id) {
+//         return res.status(400).json({ "result": "Missing required parameters" });
+//     }
 
-    try {
-        // Check if the model exists
-        connection_final.query(
-            'SELECT * FROM model WHERE model_id =?',
-            [model_id],
-            (err, results) => {
-                if (err) {
-                    console.log("Error checking model existence", err);
-                    return res.status(500).json({ "result": "Database Error" });
-                }
+//     try {
+//         // Check if the model exists
+//         connection_final.query(
+//             'SELECT * FROM model WHERE model_id =?',
+//             [model_id],
+//             (err, results) => {
+//                 if (err) {
+//                     console.log("Error checking model existence", err);
+//                     return res.status(500).json({ "result": "Database Error" });
+//                 }
                 
-                if (results.length === 0) {
-                    return res.status(404).json({ "result": "Model Not Found" });
-                }
+//                 if (results.length === 0) {
+//                     return res.status(404).json({ "result": "Model Not Found" });
+//                 }
                 
-                // Update only if the model exists
-                connection_final.query(
-                    'UPDATE model SET model =?, model_detail=? WHERE model_id = ?',
-                    [model, model_detail, model_id],
-                    (err, updateResults) => {
-                        if (err) {
-                            console.log("Error updating model", err);
-                            return res.status(500).json({ "result": "Database Error" });
-                        }
+//                 // Update only if the model exists
+//                 connection_final.query(
+//                     'UPDATE model SET model =?, model_detail=? WHERE model_id = ?',
+//                     [model, model_detail, model_id],
+//                     (err, updateResults) => {
+//                         if (err) {
+//                             console.log("Error updating model", err);
+//                             return res.status(500).json({ "result": "Database Error" });
+//                         }
                         
-                        if (updateResults.affectedRows === 0) {
-                            return res.status(404).json({ "result": "Model Not Found" });
-                        }
+//                         if (updateResults.affectedRows === 0) {
+//                             return res.status(404).json({ "result": "Model Not Found" });
+//                         }
                         
-                        res.status(200).json({
-                            "result_code": "200",
-                            "result": "Update Success",
-                            "affected_rows": updateResults.affectedRows,
-                        });
-                    }
-                );
-            }
-        );
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ "result": "Server Error" });
-    }
-}
+//                         res.status(200).json({
+//                             "result_code": "200",
+//                             "result": "Update Success",
+//                             "affected_rows": updateResults.affectedRows,
+//                         });
+//                     }
+//                 );
+//             }
+//         );
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).json({ "result": "Server Error" });
+//     }
+// }
 
 
-exports.delete_model = (req, res, next) => {
-    let { model_id } = req.body;  // Get data from request body
+// exports.delete_model = (req, res, next) => {
+//     let { model_id } = req.body;  // Get data from request body
 
-    if (!model_id) {
-        return res.status(400).json({ "result": "Missing required parameters" });
-    }
+//     if (!model_id) {
+//         return res.status(400).json({ "result": "Missing required parameters" });
+//     }
 
-    try {
-        // Check if the model exists
-        connection_final.query(
-            'SELECT * FROM model WHERE model_id = ?',
-            [model_id],
-            (err, results) => {
-                if (err) {
-                    console.log("Error checking model existence", err);
-                    return res.status(500).json({ "result": "Database Error" });
-                }
+//     try {
+//         // Check if the model exists
+//         connection_final.query(
+//             'SELECT * FROM model WHERE model_id = ?',
+//             [model_id],
+//             (err, results) => {
+//                 if (err) {
+//                     console.log("Error checking model existence", err);
+//                     return res.status(500).json({ "result": "Database Error" });
+//                 }
 
-                if (results.length === 0) {
-                    return res.status(404).json({ "result": "Model Not Found" });
-                }
+//                 if (results.length === 0) {
+//                     return res.status(404).json({ "result": "Model Not Found" });
+//                 }
 
-                // Delete only if the model exists
-                connection_final.query(
-                    'DELETE FROM model WHERE model_id = ?', [model_id],
-                    (err, deleteResults) => {
+//                 // Delete only if the model exists
+//                 connection_final.query(
+//                     'DELETE FROM model WHERE model_id = ?', [model_id],
+//                     (err, deleteResults) => {
     
-                        if (err) {
-                            console.log("Error deleting model", err);
-                            return res.status(500).json({ "result": "Database Error" });
-                        }
+//                         if (err) {
+//                             console.log("Error deleting model", err);
+//                             return res.status(500).json({ "result": "Database Error" });
+//                         }
 
-                        res.status(200).json({
-                            "result_code": "200",
-                            "result": "Delete Success",
-                            "affected_rows": deleteResults.affectedRows,
-                        });
-                    }
-                );
-            }
-        );
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ "result": "Server Error" });
-    }
-};
+//                         res.status(200).json({
+//                             "result_code": "200",
+//                             "result": "Delete Success",
+//                             "affected_rows": deleteResults.affectedRows,
+//                         });
+//                     }
+//                 );
+//             }
+//         );
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).json({ "result": "Server Error" });
+//     }
+// };
 
 
 //************************************************** Product ************************************************************
 
 exports.select_all_product = (req, res, next) => {
     try {
-        let sql = `SELECT p.proid, p.ProductName, b.brand, c.category, m.model, z.zone, p.qty, p.qty_min, p.cost_price, p.retail_price, p.status
+        let sql = `SELECT p.proid, p.ProductName, b.brand, c.category, z.zone, p.pro_detail, p.qty, p.qty_min, p.cost_price, p.retail_price, p.status
                    FROM products p 
                    LEFT JOIN brand b ON p.brand_id = b.brand_id 
                    LEFT JOIN category c ON p.cat_id = c.cat_id 
-                   LEFT JOIN model m ON p.model_id = m.model_id 
                    LEFT JOIN zone z ON p.zone_id = z.zone_id`;
 
         connection_final.query(sql, [], (err, results) => {
@@ -777,13 +776,12 @@ exports.select_product_with_proname = (req, res, next) => {
 }
 
 exports.search_products = (req, res, next) => {
-    let { ProductName, brand, category, zone, model, status } = req.body;
+    let { ProductName, brand, category, zone, pro_detail, status } = req.body;
 
-    let sql = `SELECT p.*, b.brand, c.category, m.model, z.zone, m.model 
+    let sql = `SELECT p.*, b.brand, c.category, z.zone, m.model 
                FROM products p
                LEFT JOIN brand b ON p.brand_id = b.brand_id
                LEFT JOIN category c ON p.cat_id = c.cat_id
-               LEFT JOIN model m ON p.model_id = m.model_id
                LEFT JOIN zone z ON p.zone_id = z.zone_id
                WHERE 1 = 1`;
 
@@ -805,9 +803,9 @@ exports.search_products = (req, res, next) => {
         sql += ` AND z.zone = ?`;
         values.push(zone_id);
     }
-    if (model) {
-        sql += ` AND m.model = ?`;
-        values.push(model_id);
+    if (pro_detail) {
+        sql += ` AND p.pro_detail LIKE ?`;
+        values.push(`%${pro_detail}%`);
     }
     if (status) {
         sql += ` AND p.status = ?`;
@@ -828,31 +826,31 @@ exports.search_products = (req, res, next) => {
 };
 
 exports.insert_product = (req, res, next) => {
-    let { ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status } = req.body;
+    let { ProductName, brand_id, cat_id, zone_id, pro_detail, qty, qty_min, cost_price, retail_price,  status } = req.body;
 
-    if (!ProductName || !brand_id || !cat_id || !model_id || !zone_id || !qty || !qty_min || !cost_price || !retail_price || !status) {
+    if (!ProductName || !brand_id || !cat_id || !zone_id || !pro_detail || !qty || !qty_min || !cost_price || !retail_price || !status) {
         return res.status(400).json({ "result": "Missing required parameters" });
     }
 
     try {
-        // ตรวจสอบว่า model_id มีอยู่แล้วหรือไม่
+        // ตรวจสอบว่า ProductName มีอยู่แล้วหรือไม่
         connection_final.query(
-            'SELECT * FROM products WHERE model_id = ?',
-            [model_id],
+            'SELECT * FROM products WHERE ProductName = ?',
+            [ProductName],
             (err, results) => {
                 if (err) {
-                    console.log("Error checking model", err);
+                    console.log("Error checking ProductName", err);
                     return res.status(500).json({ "result": "Database Error" });
                 }
 
                 if (results.length > 0) {
-                    return res.status(400).json({ "result": "Model ID already exists" });
+                    return res.status(400).json({ "result": "ProductName already exists" });
                 }
 
-                // ถ้า model_id ยังไม่มีอยู่ในระบบ ให้ทำการ INSERT
+                // ถ้า ProductName ยังไม่มีอยู่ในระบบ ให้ทำการ INSERT
                 connection_final.query(
-                    'INSERT INTO products (ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status) VALUES (?,?,?,?,?,?,?,?,?,?)',
-                    [ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status],
+                    'INSERT INTO products (ProductName, brand_id, cat_id, zone_id, pro_detail, qty, qty_min, cost_price, retail_price, status) VALUES (?,?,?,?,?,?,?,?,?,?)',
+                    [ProductName, brand_id, cat_id, zone_id, pro_detail, qty, qty_min, cost_price, retail_price, status],
                     (err, insertResults) => {
                         if (err) {
                             console.log("Error inserting product", err);
@@ -876,31 +874,31 @@ exports.insert_product = (req, res, next) => {
 
 
 exports.update_product = (req, res, next) => {
-    let { ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status, proid } = req.body;
+    let { ProductName, brand_id, cat_id, zone_id, pro_detail, qty, qty_min, cost_price, retail_price, status, proid } = req.body;
 
-    if (!ProductName || !brand_id || !cat_id || !model_id || !zone_id || !qty || !qty_min || !cost_price || !retail_price || !status) {
+    if (!ProductName || !brand_id || !cat_id || !zone_id || !pro_detail || !qty || !qty_min || !cost_price || !retail_price || !status) {
         return res.status(400).json({ result: "Missing required parameters" });
     }
 
     try {
-        // Check if the model_id already exists in the database
+        // Check if the ProductName already exists in the database
         connection_final.query(
-            'SELECT * FROM products WHERE model_id = ? AND proid != ?',
-            [model_id, proid],
+            'SELECT * FROM products WHERE ProductName = ? AND proid != ?',
+            [ProductName, proid],
             (err, results) => {
                 if (err) {
-                    console.log("Error checking for duplicate model_id", err);
+                    console.log("Error checking for duplicate ProductName", err);
                     return res.status(500).json({ result: "Database Error" });
                 }
 
                 if (results.length > 0) {
-                    return res.status(400).json({ result: "Model ID already exists, please use a unique model ID" });
+                    return res.status(400).json({ result: "ProductName already exists, please use a unique ProductName" });
                 }
 
-                // Proceed with updating the product if no duplicate model_id found
+                // Proceed with updating the product if no duplicate pro_detail found
                 connection_final.query(
-                    'UPDATE products SET ProductName = ?, brand_id = ?, cat_id = ?, model_id = ?, zone_id = ?, qty = ?, qty_min = ?, cost_price = ?, retail_price = ?, status = ? WHERE proid = ?',
-                    [ProductName, brand_id, cat_id, model_id, zone_id, qty, qty_min, cost_price, retail_price, status, proid],
+                    'UPDATE products SET ProductName = ?, brand_id = ?, cat_id = ?, zone_id = ?, pro_detail = ?, qty = ?, qty_min = ?, cost_price = ?, retail_price = ?, status = ? WHERE proid = ?',
+                    [ProductName, brand_id, cat_id, zone_id, pro_detail, qty, qty_min, cost_price, retail_price, status, proid],
                     (err, updateResults) => {
                         if (err) {
                             console.log("Error updating product", err);

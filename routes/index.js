@@ -29,11 +29,11 @@ router.put('/Update/Zone', api_products.update_zone);
 router.delete('/Delete/Zone', api_products.delete_zone);
 
 // Model Route
-router.get('/All/Model', api_products.select_all_model);
-router.post('/Model/With/ID', api_products.select_model_with_id);
-router.post('/Insert/Model', api_products.insert_model);
-router.put('/Update/Model', api_products.update_model);
-router.delete('/Delete/Model', api_products.delete_model);
+// router.get('/All/Model', api_products.select_all_model);
+// router.post('/Model/With/ID', api_products.select_model_with_id);
+// router.post('/Insert/Model', api_products.insert_model);
+// router.put('/Update/Model', api_products.update_model);
+// router.delete('/Delete/Model', api_products.delete_model);
 
 // Product Route
 router.get('/All/Product', api_products.select_all_product);
