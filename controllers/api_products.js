@@ -949,6 +949,33 @@ exports.delete_product = (req, res, next) => {
     }
 };
 
+
+exports.select_min_product = (req, res, next) => {
+    try {
+        let sql = `SELECT p.proid, p.ProductName, b.brand, c.category, p.pro_detail, p.qty 
+                   FROM products p 
+                   LEFT JOIN brand b ON p.brand_id = b.brand_id 
+                   LEFT JOIN category c ON p.cat_id = c.cat_id 
+                   where p.qty <= p.qty_min`;
+
+        connection_final.query(sql, [], (err, results) => {
+            if (err) {
+                console.error("Database Error:", err);
+                return res.status(500).json({ "result": "Database Error" });
+            }
+            res.status(200).json({
+                "result_code": "200",
+                "result": "Success",
+                "products": results
+            });
+        });
+
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ "result": "Internal Server Error" });
+    }
+}
+
 //************************************************** End ************************************************************
 
 

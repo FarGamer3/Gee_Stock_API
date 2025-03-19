@@ -42,6 +42,7 @@ router.post('/products/search', api_products.search_products);
 router.post('/Insert/Product', api_products.insert_product);
 router.put('/Update/Product', api_products.update_product);
 router.delete('/Delete/Product', api_products.delete_product);
+router.get('/All/Min/Product', api_products.select_min_product);
 
 
 module.exports = router;
